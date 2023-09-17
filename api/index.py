@@ -244,3 +244,6 @@ def retrieve_query_val(var = "username"):
     if not username:
         return None
     return username
+
+if __name__ == "__main__":
+    app.run()

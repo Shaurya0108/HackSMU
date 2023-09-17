@@ -2,6 +2,8 @@
 
 # dependencies
 node_modules/
+api/env/
+api/_pycache_/
 
 # Expo
 .expo/
