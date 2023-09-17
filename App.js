@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, SafeAreaView, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import FlipCard from 'react-native-flip-card';
 
 const Separator = () => <View style={styles.separator} />;
 
 const App = () => {
   const [cardData, setCardData] = useState([
-    { id: 1, frontText: 'Amazon Card', backText: 'Description:                         Use this card for amazon purchases                            Transaction History:                               $80 - 09/17/2023' },
-    { id: 2, frontText: 'Netflix Card', backText: 'Card 2 Back' },
-    { id: 3, frontText: 'Aliexpress Card', backText: 'Card 3 Back' },
+    { id: 1, frontText: 'Card 1 Front', backText: 'Card 1 Back' },
+    { id: 2, frontText: 'Card 2 Front', backText: 'Card 2 Back' },
+    { id: 3, frontText: 'Card 3 Front', backText: 'Card 3 Back' },
   ]);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredCards, setFilteredCards] = useState(cardData);
 
   const deleteCard = (id) => {
     const updatedCards = cardData.filter((card) => card.id !== id);
@@ -19,7 +22,7 @@ const App = () => {
   const addCard = () => {
     Alert.prompt(
       'Add Card',
-      'Enter the name of this card',
+      'Enter the Front Text and Back Text for the new card:',
       [
         {
           text: 'Cancel',
@@ -36,6 +39,7 @@ const App = () => {
                 backText: `Back of ${inputText}`,
               };
               setCardData([...cardData, newCard]);
+              setSearchQuery(''); // Clear the search query when adding a card
             }
           },
         },
@@ -44,16 +48,32 @@ const App = () => {
     );
   };
 
+  const handleSearch = () => {
+    const filtered = cardData.filter((card) =>
+      card.frontText.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredCards(filtered);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <Text style={styles.header}>Wallet</Text>
 
+      {/* Search Bar */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search by Front Text"
+        value={searchQuery}
+        onChangeText={(text) => setSearchQuery(text)}
+        onSubmitEditing={handleSearch}
+      />
+
       <ScrollView
         horizontal
         contentContainerStyle={[styles.cardScrollView, { marginTop: 10 }]}
       >
-        {cardData.map((card) => (
+        {filteredCards.map((card) => (
           <View key={card.id} style={styles.cardContainer}>
             <FlipCard style={styles.card} friction={6} perspective={1000} flipHorizontal={true}>
               {/* Card Front */}
@@ -89,8 +109,18 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 150,
+    marginBottom: 140,
     color: 'white',
+  },
+  searchInput: {
+    width: '80%',
+    height: 40,
+    borderColor: 'white',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 10,
+    color: 'white',
+    marginBottom: 10,
   },
   cardScrollView: {
     flexDirection: 'row',
